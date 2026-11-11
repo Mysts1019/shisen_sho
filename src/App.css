@@ -1,0 +1,653 @@
+/* ── 전통 동양풍 테마 ── */
+:root {
+  --wood-dark: #2b1a0f;
+  --wood: #4a2e1b;
+  --wood-light: #6b4226;
+  --lacquer: #9b1c1c;
+  --lacquer-dark: #6e1212;
+  --gold: #d4af5a;
+  --paper: #f4ead5;
+  --ink: #2a1d12;
+  --ivory: #fbf6e9;
+  --ivory-edge: #e2d6b8;
+  --jade: #2f6b4f;
+  --felt: #1d4a37;
+  --serif: 'Noto Serif KR', 'Batang', 'AppleMyungjo', serif;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  margin: 0;
+  height: 100%;
+}
+
+body {
+  background:
+    radial-gradient(ellipse at 50% 0%, rgb(255 220 160 / 0.12), transparent 60%),
+    repeating-linear-gradient(
+      100deg,
+      var(--wood) 0 6px,
+      #4f311d 6px 9px,
+      var(--wood) 9px 17px,
+      #452a18 17px 19px
+    ),
+    var(--wood);
+  color: var(--paper);
+  font-family: var(--serif);
+  -webkit-tap-highlight-color: transparent;
+  overscroll-behavior: none;
+}
+
+button {
+  font: inherit;
+  color: inherit;
+  cursor: pointer;
+  touch-action: manipulation;
+}
+
+.app {
+  display: flex;
+  flex-direction: column;
+  height: 100dvh;
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: max(12px, env(safe-area-inset-top)) 16px max(12px, env(safe-area-inset-bottom));
+}
+
+/* ── 낙관(도장) ── */
+.seal {
+  display: inline-grid;
+  place-items: center;
+  min-width: 2.2em;
+  padding: 0.25em 0.4em;
+  border: 2px solid var(--lacquer);
+  border-radius: 4px;
+  background: var(--lacquer);
+  color: var(--paper);
+  font-weight: 900;
+  line-height: 1.1;
+  box-shadow: inset 0 0 0 2px var(--paper), 0 2px 6px rgb(0 0 0 / 0.3);
+}
+
+.seal.small {
+  font-size: 0.9rem;
+}
+
+.seal.large {
+  font-size: 2rem;
+  padding: 0.3em 0.45em;
+  transform: rotate(-4deg);
+}
+
+/* ── 버튼 ── */
+.btn {
+  padding: 8px 14px;
+  border: 1px solid var(--gold);
+  border-radius: 6px;
+  background: linear-gradient(var(--lacquer), var(--lacquer-dark));
+  color: var(--paper);
+  font-weight: 700;
+  box-shadow: 0 2px 0 rgb(0 0 0 / 0.35);
+}
+
+.btn b {
+  color: var(--gold);
+}
+
+.btn.ghost {
+  background: rgb(0 0 0 / 0.25);
+}
+
+.btn.icon {
+  padding: 8px 10px;
+}
+
+.btn:active:not(:disabled) {
+  transform: translateY(1px);
+  box-shadow: none;
+}
+
+.btn:disabled {
+  opacity: 0.4;
+  cursor: default;
+}
+
+/* ── 상단 정보(HUD) ── */
+.hud {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px 16px;
+}
+
+.hud-info {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 6px 14px;
+}
+
+.hud-buttons {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.badge {
+  padding: 2px 10px;
+  border: 1px solid var(--gold);
+  border-radius: 999px;
+  color: var(--gold);
+  font-size: 0.85rem;
+}
+
+.timer {
+  display: inline-block;
+  min-width: 3.2em;
+  font-size: 1.4rem;
+  font-weight: 900;
+  font-variant-numeric: tabular-nums;
+  color: var(--paper);
+}
+
+.timer.warn {
+  color: #ff6b5a;
+  animation: blink 1s steps(2) infinite;
+}
+
+.stat b {
+  color: var(--gold);
+  font-variant-numeric: tabular-nums;
+}
+
+.combo {
+  color: var(--gold);
+  font-weight: 900;
+  animation: pop 0.25s ease-out;
+}
+
+.message {
+  min-height: 1.4em;
+  margin: 6px 0;
+  color: var(--gold);
+  font-size: 0.9rem;
+  text-align: center;
+}
+
+/* ── 보드 ── */
+.board-area {
+  flex: 1;
+  min-height: 0;
+  display: grid;
+  place-items: center;
+}
+
+.board {
+  position: relative;
+  display: grid;
+  border-radius: 10px;
+  background:
+    radial-gradient(ellipse at center, rgb(255 255 255 / 0.06), transparent 70%),
+    var(--felt);
+  box-shadow:
+    0 0 0 6px var(--wood-light),
+    0 0 0 8px var(--gold),
+    0 10px 30px rgb(0 0 0 / 0.5),
+    inset 0 0 30px rgb(0 0 0 / 0.45);
+  user-select: none;
+  animation: board-in 0.3s ease-out; /* 새 판·섞기 때 보드가 다시 그려지며 재생 */
+}
+
+.cell {
+  aspect-ratio: 3 / 4;
+}
+
+.tile {
+  padding: 0;
+  border: 1px solid var(--ivory-edge);
+  border-radius: calc(var(--cell-w) * 0.14);
+  background: linear-gradient(160deg, #fffdf6, var(--ivory) 55%, #efe5cc);
+  box-shadow:
+    0 calc(var(--cell-w) * 0.06 + 1px) 0 var(--jade),
+    0 calc(var(--cell-w) * 0.06 + 3px) 4px rgb(0 0 0 / 0.4);
+  font-family: var(--serif);
+  font-size: calc(var(--cell-w) * 0.62);
+  font-weight: 900;
+  line-height: 1;
+  transition: transform 0.1s;
+  touch-action: manipulation;
+}
+
+@media (hover: hover) {
+  .tile:hover {
+    background: linear-gradient(160deg, #fffef9, #fff6dc);
+  }
+}
+
+.tile.selected {
+  transform: translateY(-4px);
+  border-color: var(--gold);
+  background: linear-gradient(160deg, #fff6d0, #ffe28a);
+  box-shadow:
+    0 0 0 2px var(--gold),
+    0 calc(var(--cell-w) * 0.06 + 5px) 6px rgb(0 0 0 / 0.45);
+}
+
+.tile.hint {
+  box-shadow: 0 0 0 3px #4caf50; /* 움직임 줄이기 설정에서도 힌트가 보이도록 */
+  animation: hint-pulse 0.9s ease-in-out infinite;
+}
+
+.tile.shake {
+  animation: shake 0.3s;
+}
+
+.tile.vanish {
+  display: grid;
+  place-items: center;
+  pointer-events: none;
+  animation: vanish 0.35s ease-in forwards;
+}
+
+.path-line {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  overflow: visible;
+}
+
+.path-line polyline {
+  fill: none;
+  stroke: var(--gold);
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  stroke-dasharray: 1;
+  stroke-dashoffset: 1;
+  filter: drop-shadow(0 0 4px rgb(255 215 120 / 0.9));
+  animation:
+    draw 0.18s ease-out forwards,
+    fade 0.2s ease-in 0.25s forwards;
+}
+
+/* ── 결과 창 ── */
+.overlay {
+  position: fixed;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  padding: 16px;
+  background: rgb(0 0 0 / 0.55);
+}
+
+.modal {
+  width: min(340px, 100%);
+  padding: 24px 28px;
+  border: 2px solid var(--gold);
+  border-radius: 10px;
+  background: var(--paper);
+  color: var(--ink);
+  text-align: center;
+  box-shadow: 0 0 0 6px var(--wood-light), 0 20px 50px rgb(0 0 0 / 0.6);
+  animation: pop 0.3s ease-out;
+}
+
+.modal .seal {
+  font-size: 1.6rem;
+}
+
+.modal h2 {
+  margin: 10px 0 14px;
+}
+
+.score-table {
+  display: grid;
+  grid-template-columns: auto auto;
+  gap: 6px 24px;
+  margin: 0;
+}
+
+.score-table dt {
+  text-align: left;
+}
+
+.score-table dd {
+  margin: 0;
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+}
+
+.score-table .total {
+  color: var(--lacquer);
+  font-size: 1.4rem;
+  font-weight: 900;
+}
+
+.new-record {
+  margin: 12px 0 0;
+  color: var(--lacquer);
+  font-weight: 900;
+}
+
+.modal-buttons {
+  display: flex;
+  justify-content: center;
+  gap: 8px;
+  margin-top: 18px;
+}
+
+.modal .btn.ghost {
+  background: transparent;
+  color: var(--ink);
+}
+
+/* ── 시작 화면 ── */
+.start {
+  margin: auto;
+  text-align: center;
+}
+
+.start h1 {
+  margin: 18px 0 8px;
+  font-size: 2.6rem;
+  font-weight: 900;
+  letter-spacing: 0.2em;
+  text-shadow: 0 3px 8px rgb(0 0 0 / 0.5);
+}
+
+.rule {
+  margin: 0;
+  line-height: 1.7;
+  opacity: 0.9;
+}
+
+.rule b {
+  color: var(--gold);
+}
+
+.difficulty-list {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 12px;
+  margin: 28px 0 20px;
+}
+
+.difficulty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  min-width: 130px;
+  padding: 16px 18px;
+  border: 2px solid var(--ivory-edge);
+  border-radius: 10px;
+  background: linear-gradient(160deg, #fffdf6, var(--ivory) 55%, #efe5cc);
+  color: var(--ink);
+  box-shadow: 0 5px 0 var(--jade), 0 8px 12px rgb(0 0 0 / 0.4);
+}
+
+.difficulty:active {
+  transform: translateY(3px);
+  box-shadow: 0 2px 0 var(--jade);
+}
+
+.difficulty strong {
+  font-size: 1.3rem;
+  font-weight: 900;
+}
+
+.difficulty span {
+  font-size: 0.85rem;
+  opacity: 0.75;
+}
+
+.difficulty .best {
+  color: var(--lacquer);
+  opacity: 1;
+  font-weight: 700;
+}
+
+/* ── 모바일 ── */
+@media (max-width: 600px) {
+  .app {
+    padding-inline: 10px;
+  }
+
+  .hud,
+  .hud-info,
+  .hud-buttons {
+    justify-content: center;
+  }
+
+  .btn {
+    padding: 7px 11px;
+    font-size: 0.9rem;
+  }
+
+  .timer {
+    font-size: 1.2rem;
+  }
+
+  .start h1 {
+    font-size: 2.1rem;
+  }
+
+  .difficulty-list {
+    flex-direction: column;
+    align-items: stretch;
+  }
+}
+
+/* ── 애니메이션 ── */
+@keyframes board-in {
+  from {
+    opacity: 0;
+    transform: scale(0.97);
+  }
+}
+
+@keyframes hint-pulse {
+  50% {
+    background: #d6f5cf;
+    box-shadow: 0 0 0 3px #4caf50, 0 0 12px #4caf50;
+  }
+}
+
+@keyframes shake {
+  25% {
+    transform: translateX(-4px);
+  }
+  75% {
+    transform: translateX(4px);
+  }
+}
+
+@keyframes vanish {
+  to {
+    opacity: 0;
+    transform: scale(0.5) translateY(-6px);
+  }
+}
+
+@keyframes draw {
+  to {
+    stroke-dashoffset: 0;
+  }
+}
+
+@keyframes fade {
+  to {
+    opacity: 0;
+  }
+}
+
+@keyframes pop {
+  from {
+    transform: scale(0.85);
+    opacity: 0;
+  }
+}
+
+@keyframes blink {
+  50% {
+    opacity: 0.55;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+  }
+}
+
+/* ── 다듬기: 일시정지·점수 팝업·마지막 10초·게임 방법 ── */
+.board-area.hidden {
+  visibility: hidden;
+}
+
+.timer.danger {
+  animation: danger-pulse 1s ease-in-out infinite;
+}
+
+.float-score {
+  position: absolute;
+  z-index: 2;
+  translate: -50% -50%;
+  color: var(--gold);
+  font-size: max(14px, calc(var(--cell-w) * 0.5));
+  font-weight: 900;
+  white-space: nowrap;
+  pointer-events: none;
+  text-shadow:
+    0 0 3px var(--wood-dark),
+    0 2px 4px rgb(0 0 0 / 0.6);
+  animation: float-up 0.6s ease-out forwards;
+}
+
+.start-buttons {
+  display: flex;
+  justify-content: center;
+  gap: 8px;
+}
+
+.help-modal {
+  width: min(520px, 100%);
+  max-height: calc(100dvh - 32px);
+  overflow-y: auto;
+  text-align: left;
+}
+
+.help-modal h2 {
+  margin-top: 0;
+  text-align: center;
+}
+
+.help-modal p {
+  margin: 0 0 12px;
+  line-height: 1.6;
+}
+
+.help-modal b {
+  color: var(--lacquer);
+}
+
+.examples {
+  display: grid;
+  grid-template-columns: 1fr 0.8fr 1fr;
+  align-items: end;
+  gap: 12px;
+  margin: 0 0 12px;
+}
+
+.examples figure {
+  margin: 0;
+  text-align: center;
+}
+
+.mini-board {
+  display: block;
+  width: 100%;
+  font-family: var(--serif);
+}
+
+.examples figcaption {
+  margin-top: 4px;
+  font-size: 0.8rem;
+  font-weight: 700;
+}
+
+.help-list {
+  margin: 0;
+  padding-left: 1.2em;
+  font-size: 0.9rem;
+  line-height: 1.7;
+}
+
+@media (max-width: 600px) {
+  .examples {
+    grid-template-columns: 1fr 1fr;
+  }
+
+  .examples figure:first-child {
+    grid-column: 1 / -1;
+    width: 60%;
+    margin: 0 auto;
+  }
+}
+
+@keyframes danger-pulse {
+  50% {
+    color: #ff3b2f;
+    transform: scale(1.15);
+  }
+}
+
+@keyframes float-up {
+  from {
+    opacity: 1;
+    translate: -50% -30%;
+  }
+  to {
+    opacity: 0;
+    translate: -50% -160%;
+  }
+}
+
+/* ── 닉네임 · 대시보드 링크 ── */
+.player-name {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  margin-top: 20px;
+}
+
+.player-name span {
+  color: var(--gold);
+  font-weight: 700;
+}
+
+.player-name input {
+  width: 12em;
+  padding: 8px 12px;
+  border: 1px solid var(--gold);
+  border-radius: 6px;
+  background: var(--paper);
+  color: var(--ink);
+  font: inherit;
+  font-size: 16px; /* iOS 입력 시 확대 방지 */
+}
+
+a.btn {
+  display: inline-block;
+  text-decoration: none;
+}
